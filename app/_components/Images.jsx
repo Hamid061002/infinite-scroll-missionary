@@ -5,6 +5,18 @@ import Spinner from "./Spinner";
 import { getNftImage, getNftImages } from "../_lib/imageNftsAPI";
 
 export default function Images() {
+  const refs = [useRef(), useRef(), useRef(), useRef()]
+  let refsHeight = useRef(null)
+
+  const maxRefs = (refs) => refs.reduce((a, b) => Math.max(a, b))
+  const minRefs = (refs) => refs.reduce((a, b) => Math.min(a, b))
+
+  useEffect(() => {
+    refsHeight.current = refs.map(ref => ref?.current.getBoundingClientRect().height)
+
+  }, [refs])
+
+
   const timeoutRef = useRef(null)
   let pageNum = 1
   let temp = 1000
@@ -46,19 +58,13 @@ export default function Images() {
     const data = await getNftImages(8, pageNum)
     const newImages = filterNftImages(data)
     let newColumns = [[], [], [], []]
-    newImages.forEach((img, i) => newColumns[i % 4].push(img))
+    newImages.forEach((img, i) => {
+      if (maxRefs(refsHeight.current) - minRefs(refsHeight.current) > 200) {
+        if (refsHeight.current[i % 4] == minRefs(refsHeight.current)) newColumns[i % 4].push(img)
+      } else newColumns[i % 4].push(img)
+    })
 
-    setNftImages(prevColumns => prevColumns.map((item,i) => [...item, ...newColumns[i]]))
-
-    // setNftImages(prevColumns => {
-    //   const updatedColumns = [...prevColumns]
-
-    //   newImages.forEach((img, i) => {
-    //     updatedColumns[i % 4].push(img)
-    //   })
-
-    //   return updatedColumns
-    // })
+    setNftImages(prevColumns => prevColumns.map((item, i) => [...item, ...newColumns[i]]))
 
     setIsLoading(false)
   }
@@ -86,7 +92,7 @@ export default function Images() {
       <div className="flex items-start gap-5 place-content-center">
         {
           nftImages.map((column, i) => (
-            <ImagesColumn images={column} key={i} />
+            <ImagesColumn ref={refs[i]} images={column} key={i} />
           ))
         }
       </div>

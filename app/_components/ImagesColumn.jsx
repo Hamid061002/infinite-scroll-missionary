@@ -5,9 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { getImages } from "../_lib/imageAPI"
 import { getNftImage, getNftImages } from "../_lib/imageNftsAPI"
 
-export default function ImagesColumn({ images }) {
-  // const ref = useRef()
-
+export default function ImagesColumn({ images, ref }) {  
   // const [nftImages, setNftImages] = useState([])
 
   // function filterNftImages(data) {
@@ -72,12 +70,12 @@ export default function ImagesColumn({ images }) {
   // }, [])
 
   return (
-    <div className="flex flex-col gap-5 h-fit">
+    <div ref={ref} className="flex flex-col gap-5 h-fit">
       {
         images?.map((image, i) => image.includes('mp4') ? <div key={i} className="bg-black w-full h-[350px]"></div> :
           <img key={i} src={image} alt="image" />)
       }
-      <div className="bg-neutral-800 animate-pulse w-full h-[350px]"></div>
+      <div className="bg-neutral-400 animate-pulse w-full h-[350px]"></div>
     </div>
   )
 }
