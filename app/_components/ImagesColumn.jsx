@@ -73,7 +73,7 @@ export default function ImagesColumn({ images, ref }) {
     <div ref={ref} className="flex flex-col gap-5 h-fit">
       {
         images?.map((image, i) => image.includes('mp4') ? <div key={i} className="bg-black w-full h-[350px]"></div> :
-          <img className="brightness-0" key={i} src={image} alt="image" />)
+          <img key={i} src={image} alt="image" />)
       }
       {/* <div className="bg-neutral-400 animate-pulse w-full h-[350px]"></div> */}
     </div>
