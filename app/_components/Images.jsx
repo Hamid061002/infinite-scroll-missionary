@@ -5,14 +5,15 @@ import Spinner from "./Spinner";
 import { getNftImage, getNftImages } from "../_lib/imageNftsAPI";
 
 export default function Images() {
-  const refs = [useRef(), useRef(), useRef(), useRef()]
+  const refs = [useRef(), useRef(), useRef()]
+  const columnNum = 3
   let refsHeight = useRef(null)
 
   const maxRefs = (refs) => refs.reduce((a, b) => Math.max(a, b))
   const minRefs = (refs) => refs.reduce((a, b) => Math.min(a, b))
 
   useEffect(() => {
-    refsHeight.current = refs.map(ref => ref?.current.getBoundingClientRect().height)
+    refsHeight.current = refs?.map(ref => ref?.current?.getBoundingClientRect().height)
 
   }, [refs])
 
@@ -22,7 +23,7 @@ export default function Images() {
   let temp = 1000
 
   const [isLoading, setIsLoading] = useState(false)
-  const [nftImages, setNftImages] = useState([[], [], [], []])
+  const [nftImages, setNftImages] = useState(Array.from({ length: columnNum }, () => []))
   // const [nftImages, setNftImages] = useState(() => Array.from({ length: imagesColumns }, () => []))
 
   function filterNftImages(data) {
@@ -36,10 +37,10 @@ export default function Images() {
     async function getData() {
       setIsLoading(true)
       const data = await getNftImages(12, pageNum)
-      const columns = [[], [], [], []]
+      const columns = Array.from({ length: columnNum }, () => [])
 
       filterNftImages(data).forEach((img, i) => {
-        columns[i % 4].push(img)
+        columns[i % columnNum]?.push(img)
       })
       pageNum++
 
@@ -55,13 +56,13 @@ export default function Images() {
 
     setIsLoading(true)
 
-    const data = await getNftImages(8, pageNum)
+    const data = await getNftImages(12, pageNum)
     const newImages = filterNftImages(data)
-    let newColumns = [[], [], [], []]
+    let newColumns = Array.from({ length: columnNum }, () => [])
+    // console.log(newImages);
+
     newImages.forEach((img, i) => {
-      if (maxRefs(refsHeight.current) - minRefs(refsHeight.current) > 200) {
-        if (refsHeight.current[i % 4] == minRefs(refsHeight.current)) newColumns[i % 4].push(img)
-      } else newColumns[i % 4].push(img)
+      newColumns[i % columnNum].push(img)
     })
 
     setNftImages(prevColumns => prevColumns.map((item, i) => [...item, ...newColumns[i]]))
@@ -75,7 +76,7 @@ export default function Images() {
 
       timeoutRef.current = setTimeout(() => {
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight - temp) {
-          temp = temp + 100
+          temp = temp + 50
           addNftImages()
         }
         timeoutRef.current = null
