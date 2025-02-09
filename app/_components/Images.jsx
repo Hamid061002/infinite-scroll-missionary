@@ -62,7 +62,9 @@ export default function Images() {
     // console.log(newImages);
 
     newImages.forEach((img, i) => {
-      newColumns[i % columnNum].push(img)
+      if (maxRefs(refsHeight.current) - minRefs(refsHeight.current) > 1500) {
+        if (refsHeight.current[i % columnNum] == minRefs(refsHeight.current)) newColumns[i % columnNum].push(img)
+      } else newColumns[i % columnNum].push(img)
     })
 
     setNftImages(prevColumns => prevColumns.map((item, i) => [...item, ...newColumns[i]]))
